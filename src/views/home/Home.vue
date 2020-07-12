@@ -3,6 +3,7 @@
     <!-- <h1>购物街</h1> -->
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
     <home-swiper :banners="banners"></home-swiper>
+    <recommend-view :recommends="recommends"></recommend-view>
   </div>
 </template>
 
@@ -16,6 +17,11 @@ import NavBar from 'components/common/navbar/NavBar';
 // import {Swiper,SwiperItem} from 'components/common/swiper'
 // 我又做了一层封装，放置home.vue中内容过多不便于维护
 import HomeSwiper from './childComps/HomeSwiper'
+// 导入推荐展示组件 RecommendView
+import RecommendView from './childComps/RecommendView'
+
+
+
 // 导入请求数据getHomeMultidata
 import {getHomeMultidata} from 'network/home';
 
@@ -27,7 +33,9 @@ export default {
   data(){
     return {
       // result:null,
-      banners:[],    }
+      banners:[],
+      recommends:[],
+    }
   },
   methods:{},
   props:{},
@@ -38,6 +46,7 @@ export default {
     // SwiperItem,
     // 抽离之后注册一下HomeSwiper
     HomeSwiper,
+    RecommendView,
   },
   watch:{},
   computed:{},
@@ -49,6 +58,8 @@ export default {
       // console.log(res);
       // this.result = res;
       this.banners = res.data.banner.list;
+      // 获取recommends数据
+      this.recommends = res.data.recommend.list;
     })
   },
   mounted(){}
