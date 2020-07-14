@@ -18,7 +18,9 @@ export default {
   methods:{
     itemClick(index){
       this.currentIndex = index;
-    }
+      // 传到home.vue组件中，用于监听切换
+      this.$emit('tabClick',index)
+    },
   },
   props:{
     titles:{
