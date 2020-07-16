@@ -5,14 +5,19 @@
       <div slot="center">欢乐购</div>
     </nav-bar>
 
-    <scroll class="content">
+    <scroll class="content"
+              ref="scroll" 
+              :probe-type="3"
+              @scroll="contentScroll"
+              :pull-up-load="true"
+              @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view />
       <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </scroll>
-
+    <back-top @click.native="backClick"  v-show="isShowBackTop"></back-top>
 
   </div>
 </template>
@@ -32,10 +37,11 @@ import RecommendView from "./childComps/RecommendView";
 // 导入FeatureView
 import FeatureView from "./childComps/FeatureView";
 
-import TabControl from "components/content/tabControl/TabControl";
 
+import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 import Scroll from 'components/common/scroll/Scroll'
+import BackTop from 'components/content/backTop/BackTop'
 
 
 // 导入请求数据getHomeMultidata
@@ -53,7 +59,9 @@ export default {
         new: { page: 0, list: [] },
         sell: { page: 0, list: [] }
       },
-      currentType: "pop"
+      currentType: "pop",
+      isShowBackTop:false,
+
     };
   },
   props: {},
@@ -69,6 +77,7 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
+    BackTop,
   },
   watch: {},
   computed: {
@@ -102,6 +111,18 @@ export default {
           break;
       }
     },
+    backClick(){
+      this.$refs.scroll.scrollTo(0,0);
+      // console.log('11')
+    },
+    contentScroll(position){
+      // console.log(position)
+      this.isShowBackTop = -position.y > 1000
+    },
+    loadMore() {
+        this.getHomeGoods(this.currentType)
+        this.$refs.scroll.scroll.refresh()
+      },
 
     // -----网络请求相关方法
     getHomeMultidata() {
@@ -122,6 +143,8 @@ export default {
         this.goods[type].list.push(...res.data.list);
         // 页码加1
         this.goods[type].page += 1;
+
+        this.$refs.scroll.finishPullUp()
       });
     }
   },
@@ -153,11 +176,20 @@ export default {
   z-index: 9;
 }
 
-
-
 .content{
+  overflow: hidden;
+
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+}
+
+
+/* .content{
   height: calc(100% - 93px);
   overflow: hidden;
   margin-top: 44px;
-}
+} */
 </style>
