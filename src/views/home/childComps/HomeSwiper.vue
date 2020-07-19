@@ -3,7 +3,7 @@
       <!-- 现在v-for得使用必须要加:key -->
       <swiper-item v-for="(item,index) in banners" :key="index">
         <a :href="item.link">
-            <img :src="item.image" alt="">
+            <img :src="item.image" alt="" @load="imageload">
         </a>
       </swiper-item>
     </swiper>
@@ -16,9 +16,18 @@ export default {
   name:"HomeSwiper",
   data(){
     return {
+      isLoad:false
     }
   },
-  methods:{},
+  methods:{
+    imageload(){
+      // console.log("----");
+      if(!this.isLoad){
+      this.$emit('swiperImageLoad')
+      this.isLoad = true
+      }
+    }
+  },
   props:{
     banners:{
       type:Array,

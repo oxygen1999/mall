@@ -4,17 +4,26 @@
     <nav-bar class="home-nav">
       <div slot="center">欢乐购</div>
     </nav-bar>
-
+    <tab-control ref="tabControl1" 
+                  class="tab-control"
+                   :titles="['流行','新款','精选']"
+                    @tabClick="tabClick"
+                    v-show="isTabFixed"
+                    ></tab-control>
     <scroll class="content"
               ref="scroll" 
               :probe-type="3"
               @scroll="contentScroll"
               :pull-up-load="true"
               @pullingUp="loadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view />
-      <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+      <tab-control ref="tabControl2" 
+                  class="tab-control"
+                   :titles="['流行','新款','精选']"
+                    @tabClick="tabClick"
+                    ></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </scroll>
     <back-top @click.native="backClick"  v-show="isShowBackTop"></back-top>
@@ -61,7 +70,8 @@ export default {
       },
       currentType: "pop",
       isShowBackTop:false,
-
+      tabOffsetTop:0,
+      isTabFixed:false,
     };
   },
   props: {},
@@ -94,7 +104,10 @@ export default {
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
+
+    
   },
+
   methods: {
     // 事件监听相关方法
     tabClick(index) {
@@ -110,6 +123,10 @@ export default {
           this.currentType = "sell";
           break;
       }
+      // 解决同步问题
+      this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index;
+
     },
     backClick(){
       this.$refs.scroll.scrollTo(0,0);
@@ -117,12 +134,21 @@ export default {
     },
     contentScroll(position){
       // console.log(position)
+      // 判断BackTop是否显示
       this.isShowBackTop = -position.y > 1000
+
+      // 判断tabControl是否吸顶
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
     loadMore() {
         this.getHomeGoods(this.currentType)
         this.$refs.scroll.scroll.refresh()
       },
+    swiperImageLoad(){
+      // console.log(this.$refs.tabControl.$el.offsetTop)
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
+    },
+
 
     // -----网络请求相关方法
     getHomeMultidata() {
@@ -148,7 +174,12 @@ export default {
       });
     }
   },
-  mounted() {}
+  mounted() {
+    // 获取tabControl的offsetTop
+    // 所有组件中都存在一个$el这么一个属性，用于获取组件中的元素
+    // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
+    console.log(this.$refs.tabControl2.$el.offsetTop);
+  }
 };
 </script>
 <style  scoped>
@@ -162,17 +193,19 @@ export default {
   /* 文字颜色值 */
   color: #fff;
 
-  position: fixed;
+  /* 浏览器原生滚动，为了让导航不跟随一起滚动 */
+  /* position: fixed;
   left: 0;
   right: 0;
   top: 0;
-  z-index: 9;
+  z-index: 9; */
 }
 
 .tab-control {
   /* 会根据top的值，自动将position的值改为fixed 移动端适用很好，但是ie这些就不兼容了 */
-  position: sticky;
-  top: 44px;
+  /* position: sticky; 已失效 */
+  position: relative;
+  /* top: 44px; */
   z-index: 9;
 }
 
@@ -191,5 +224,13 @@ export default {
   height: calc(100% - 93px);
   overflow: hidden;
   margin-top: 44px;
+} */
+
+
+/* .fixed{
+  position: fixed;
+  left:0;
+  right: 0;
+  top: 44px;
 } */
 </style>
