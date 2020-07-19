@@ -32,7 +32,7 @@ const tabBar = () => import('components/common/tabbar/tabBar')
 const tabBarItem = () => import('components/common/tabbar/tabBarItem')
 
 export default {
-  name:" ",
+  name:"MainTabBar",
   data(){
     return {
     }
@@ -41,7 +41,7 @@ export default {
   props:{},
   components:{
       tabBar,
-      tabBarItem
+      tabBarItem,
   },
   watch:{},
   computed:{},

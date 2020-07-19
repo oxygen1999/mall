@@ -1,6 +1,7 @@
 <template>
   <div class=goods>
     <goods-list-item v-for="(item,index) in goods" :key="index" :goodsItem="item" />
+    <!-- 删除{{goods,否则会导致页面布局混乱}} -->
     <!-- {{goods}} -->
   </div>
 </template>
